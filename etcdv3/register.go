@@ -19,7 +19,7 @@ var Deregister = make(chan struct{})
 // ttl:seconds
 func Register(target, service, host, port string, ttl int) error {
 	serviceValue := net.JoinHostPort(host, port)
-	serviceKey := fmt.Sprintf("/%s/%s/%s", schema, service, serviceValue)
+	serviceKey := fmt.Sprintf("/%s/%s/%s", Schema, service, serviceValue)
 
 	// get endpoints for register dial address
 	var err error

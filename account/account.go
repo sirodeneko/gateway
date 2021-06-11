@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"github.com/wethedevelop/gateway/etcdv3"
 	"log"
 	"net/http"
 	"time"
@@ -14,7 +15,8 @@ import (
 )
 
 const (
-	address = "localhost:50051"
+	address     = "localhost:50051"
+	serviceName = etcdv3.Schema + "://authority/" + "account"
 )
 
 // SignupForm 注册表单
@@ -32,7 +34,7 @@ func Signup(c *gin.Context) {
 	}
 
 	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(serviceName, grpc.WithBalancerName("round_robin"), grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

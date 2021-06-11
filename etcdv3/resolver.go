@@ -10,26 +10,25 @@ import (
 	"google.golang.org/grpc/resolver"
 )
 
-const schema = "wethedevelop/resolver"
+const Schema = "wethedevelop/resolver"
 
 // resolver is the implementaion of grpc.resolve.Builder
 type Resolver struct {
-	target  string
-	service string
-	cli     *clientv3.Client
-	cc      resolver.ClientConn
+	endpoints string
+	cli       *clientv3.Client
+	cc        resolver.ClientConn
 }
 
 // NewResolver return resolver builder
 // target example: "http://127.0.0.1:2379,http://127.0.0.1:12379,http://127.0.0.1:22379"
 // service is service name
-func NewResolver(target string, service string) resolver.Builder {
-	return &Resolver{target: target, service: service}
+func NewResolver(endpoints string) resolver.Builder {
+	return &Resolver{endpoints: endpoints}
 }
 
 // Scheme return etcdv3 schema
 func (r *Resolver) Scheme() string {
-	return schema
+	return Schema
 }
 
 // ResolveNow
@@ -45,7 +44,7 @@ func (r *Resolver) Build(target resolver.Target, cc resolver.ClientConn, opts re
 	var err error
 
 	r.cli, err = clientv3.New(clientv3.Config{
-		Endpoints: strings.Split(r.target, ","),
+		Endpoints: strings.Split(r.endpoints, ","),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("gateway: create clientv3 client failed: %v", err)
@@ -53,7 +52,7 @@ func (r *Resolver) Build(target resolver.Target, cc resolver.ClientConn, opts re
 
 	r.cc = cc
 
-	go r.watch(fmt.Sprintf("/%s/%s/", schema, r.service))
+	go r.watch(fmt.Sprintf("/%s/%s/", Schema, target.Endpoint))
 
 	return r, nil
 }

@@ -12,15 +12,15 @@ import (
 func Route() *gin.Engine {
 	// grpc 负载均衡
 	// 创建一个Builder
-	builder := etcdv3.NewResolver(os.Getenv("REDIS_PW"), "service")
+	builder := etcdv3.NewResolver(os.Getenv("ETCD_ADDR"))
 	// 将会以rs.Scheme()为key进行注册
-	resolver.Register(builder)
 	// 调用 grpc.DialContext(ctx, r.Scheme()+"://authority/"+"serviceName",...)时
 	// 会根据第二个参数解析出一个resolver.Target{}
 	// Scheme=r.Scheme()
 	// Authority="authority"
 	// Endpoint="serviceName"
 	// 根据Scheme将拿到我们注册的Builder
+	resolver.Register(builder)
 
 	r := gin.Default()
 
